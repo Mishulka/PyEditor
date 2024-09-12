@@ -2,7 +2,9 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
 
-class ImageEditor:
+import _open_image
+
+class ImageEditor(_open_image.Mixin):
     def __init__(self, window):
         self.window = window
         self.window.title("ImgEditor")
@@ -50,10 +52,6 @@ class ImageEditor:
         self.flip_button.image = flip_icon
         self.flip_button.pack(side=LEFT, padx=10, pady=5)
 
-        black_white_icon = ImageTk.PhotoImage(Image.open("buttons/black_white.png"))
-        self.black_and_white_button = Button(self.window, image=black_white_icon, command=self.black_and_white_image, bd=0)
-        self.black_and_white_button.image = black_white_icon
-        self.black_and_white_button.pack(side=LEFT, padx=10, pady=5)
 
         crop_icon = ImageTk.PhotoImage(Image.open("buttons/crop.png"))
         self.crop_button = Button(self.window, image=crop_icon, command=self.crop_image, bd=0)
@@ -65,30 +63,7 @@ class ImageEditor:
         self.add_text_button.image = add_text_icon
         self.add_text_button.pack(side=LEFT, padx=10, pady=5)
 
-        pink_filter_icon = ImageTk.PhotoImage(Image.open("buttons/pink_filter.png"))
-        self.pink_filter_button = Button(self.window, image=pink_filter_icon, command=self.apply_pink_filter, bd=0)
-        self.pink_filter_button.image = pink_filter_icon
-        self.pink_filter_button.pack(side=LEFT, padx=10, pady=5)
-
-        blue_filter_icon = ImageTk.PhotoImage(Image.open("buttons/blue_filter.png"))
-        self.blue_filter_button = Button(self.window, image=blue_filter_icon, command=self.apply_blue_filter, bd=0)
-        self.blue_filter_button.image = blue_filter_icon
-        self.blue_filter_button.pack(side=LEFT, padx=10, pady=5)
-
-
-    def open_image(self):
-        # открытие изображения для редактирования
         
-        filename = filedialog.askopenfilename(title="Выберите файл",
-                                              filetypes=(("jpeg файлы", "*.jpg"), ("png файлы", "*.png")))
-        if filename:
-            self.undo_stack.append(self.image.copy() if self.image else None)  
-            self.redo_stack.clear()
-            self.image_file = filename
-            self.image = Image.open(filename)
-            self.image_tk = ImageTk.PhotoImage(self.image)
-            self.canvas.create_image(0, 0, anchor=NW, image=self.image_tk)
-
     def save_image(self):
         # конвертация и запись в файл
         if self.image_file and self.image:
@@ -147,14 +122,6 @@ class ImageEditor:
             self.image_tk = ImageTk.PhotoImage(self.image)
             self.canvas.create_image(0, 0, anchor=NW, image=self.image_tk)
 
-    def black_and_white_image(self):
-        # черно-белое изображение
-        if self.image:
-            self.undo_stack.append(self.image.copy())
-            self.redo_stack.clear()
-            self.image = self.image.convert('L')
-            self.image_tk = ImageTk.PhotoImage(self.image)
-            self.canvas.create_image(0, 0, anchor=NW, image=self.image_tk)
 
     def crop_image(self):
         # обрезка до нужного размера
@@ -234,30 +201,6 @@ class ImageEditor:
             font_color = self.font_color.get()
             font_size = int(self.font_size.get())
             self.canvas.create_text(x, y, text=text, fill=font_color, font=("Arial", font_size))
-
-    def apply_pink_filter(self): # добавление слоя с розовой заливкой
-        if self.image:
-            self.undo_stack.append(self.image.copy())
-            self.redo_stack.clear()
-            if self.image.mode != "RGBA":
-                self.image = self.image.convert("RGBA")
-            pink_color = (255, 192, 203, 128)
-            drawing_layer = Image.new('RGBA', self.image.size, pink_color)
-            self.image = Image.alpha_composite(self.image, drawing_layer)
-            self.image_tk = ImageTk.PhotoImage(self.image)
-            self.canvas.create_image(0, 0, anchor=NW, image=self.image_tk)
-
-    def apply_blue_filter(self): # голубая заливка
-        if self.image:
-            self.undo_stack.append(self.image.copy())
-            self.redo_stack.clear()
-            if self.image.mode != "RGBA":
-                self.image = self.image.convert("RGBA")
-            blue_color = (173, 216, 230, 128)
-            drawing_layer = Image.new('RGBA', self.image.size, blue_color)
-            self.image = Image.alpha_composite(self.image, drawing_layer)
-            self.image_tk = ImageTk.PhotoImage(self.image)
-            self.canvas.create_image(0, 0, anchor=NW, image=self.image_tk)
 
     def undo(self): # отмена последнего действия
         if self.undo_stack:
