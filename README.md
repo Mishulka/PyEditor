@@ -8,7 +8,7 @@ pip install pil
 Запустить режим отладки
 
 ![image](https://github.com/user-attachments/assets/ccd2a072-7edb-4e3b-a0b6-df111160fa80)
-
+Открытие изображения
 ![image](https://github.com/user-attachments/assets/4532fe0b-11dd-4169-b2da-92a30ceff872)
-
+Ресайз, Добавление текста, Отзеркаливание фото
 ![image](https://github.com/user-attachments/assets/4cdb86fe-24e9-452a-9210-a4564cbac515)
